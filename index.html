@@ -441,10 +441,8 @@
 ═══════════════════════════════════════════ -->
 <script>
 const CONFIG = {
-  // ← Remplace par ton vrai numéro WhatsApp (format international, sans +)
-  WHATSAPP_NUMBER: "972547361558",
-  // ← Ton prénom tel qu'il apparaîtra dans le message
-  PRENOM: "Lionel"
+  // ← Numéro WhatsApp destinataire (format international, sans +)
+  WHATSAPP_NUMBER: "972547361558"
 };
 </script>
 <!-- ══════════════════════════════════════════ -->
@@ -481,11 +479,41 @@ const CONFIG = {
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
       <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.848L0 24l6.335-1.51A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.79 9.79 0 01-5.013-1.376l-.36-.213-3.76.896.944-3.658-.234-.376A9.783 9.783 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
     </svg>
-    Envoyer à <span id="prenomBtn"></span>
+    Envoyer la liste 📲
   </button>
 </div>
 
 <script>
+// ─── Traductions hébreu ────────────────────────────────────────
+const HE_CATS = {
+  fruits:"פירות", legumes:"ירקות", laitier:"מוצרי חלב",
+  viandes:"בשר ועוף (כשר)", poissons:"דגים (כשר)",
+  epicerie:"מכולת יבשה", boulangerie:"מאפייה",
+  petitdej:"ארוחת בוקר", surgeles:"קפואים",
+  conserves:"שימורים", snacks:"חטיפים ועוגות",
+  boissons:"משקאות", menager:"מוצרי ניקיון",
+  salledebain:"חדר אמבטיה", bebeenfant:"תינוק וילדים", divers:"שונות"
+};
+
+const HE_ITEMS = {
+  "Bananes":"בננות","Pommes":"תפוחים","Poires":"אגסים","Oranges":"תפוזים","Clémentines":"קלמנטינות","Citrons":"לימונים","Pamplemousses":"אשכוליות","Raisins":"ענבים","Fraises":"תותים","Melon":"מלון","Pastèque":"אבטיח","Mangue":"מנגו","Avocat":"אבוקדו","Pêches":"אפרסקים","Abricots":"משמשים","Prunes":"שזיפים","Kiwi":"קיווי","Ananas":"אננס","Dattes":"תמרים","Figues":"תאנים","Grenade":"רימון","Litchis":"ליצ'י",
+  "Tomates":"עגבניות","Concombres":"מלפפונים","Oignons":"בצל","Ail":"שום","Pommes de terre":"תפוחי אדמה","Patates douces":"בטטות","Carottes":"גזר","Courgettes":"קישואים","Aubergines":"חצילים","Poivrons":"פלפלים","Céleri":"סלרי","Chou":"כרוב","Laitue":"חסה","Roquette":"רוקט","Épinards":"תרד","Persil":"פטרוזיליה","Coriandre":"כוסברה","Aneth":"שמיר","Menthe":"נענע","Betteraves":"סלק","Champignons":"פטריות","Brocoli":"ברוקולי","Chou-fleur":"כרובית","Haricots verts":"שעועית ירוקה","Artichaut":"ארטישוק","Poireaux":"כרישה","Radis":"צנון","Fenouil":"שמר","Piment":"פלפל חריף",
+  "Lait":"חלב","Yaourts nature":"יוגורט טבעי","Yaourts aux fruits":"יוגורט פירות","Fromage blanc":"גבינה לבנה","Cottage":"קוטג'","Labneh":"לאבנה","Beurre":"חמאה","Crème fraîche":"שמנת","Fromage râpé":"גבינה מגוררת","Mozzarella":"מוצרלה","Feta":"פטה","Ricotta":"ריקוטה","Halloumi":"חלומי","Gouda":"גאודה","Emmental":"אמנטל","Camembert (K)":"קממבר (כ)","Crème dessert":"קרם דסר","Lait fermenté":"לבן","Lait de soja":"חלב סויה","Lait d'amande":"חלב שקדים",
+  "Poulet entier":"עוף שלם","Blancs de poulet":"חזה עוף","Cuisses de poulet":"שוקי עוף","Escalopes de dinde":"שניצל הודו","Viande hachée de bœuf":"בשר טחון בקר","Steak de bœuf":"סטייק בקר","Côtes de bœuf":"צלעות בקר","Rôti de bœuf":"רוסטביף","Foie de poulet":"כבד עוף","Viande hachée de poulet":"עוף טחון","Aiguillettes de poulet":"פרגיות","Canard":"ברווז",
+  "Saumon":"סלמון","Thon en boîte":"טונה בקופסה","Filet de lieu":"פילה דג","Carpe":"קרפיון","Dorade":"דניס","Mulet":"מולט","Sardines":"סרדינים","Merlu":"מרלוזה","Bar":"בר","Truite":"פורל","Gefilte fish":"גפילטע פיש","Anchois":"אנשובי",
+  "Riz":"אורז","Pâtes":"פסטה","Couscous":"קוסקוס","Boulgour":"בורגול","Lentilles":"עדשים","Pois chiches":"חומוס (גרגרים)","Haricots rouges":"שעועית אדומה","Haricots blancs":"שעועית לבנה","Farine":"קמח","Sucre":"סוכר","Sel":"מלח","Poivre":"פלפל שחור","Paprika":"פפריקה","Curcuma":"כורכום","Cumin":"כמון","Cannelle":"קינמון","Cardamome":"הל","Za'atar":"זעתר","Sumac":"סומק","Baharat":"בהרט","Huile d'olive":"שמן זית","Huile de tournesol":"שמן חמניות","Huile de coco":"שמן קוקוס","Vinaigre":"חומץ","Moutarde":"חרדל","Mayonnaise kasher":"מיונז כשר","Ketchup":"קטשופ","Sauce tomate":"רוטב עגבניות","Concentré de tomate":"רסק עגבניות","Tahini":"טחינה","Houmous":"חומוס","Miel":"דבש","Confiture":"ריבה","Nutella":"נוטלה","Beurre de cacahuète":"חמאת בוטנים","Cornichons":"מלפפון חמוץ","Câpres":"קפריסין","Olives":"זיתים","Levure":"שמרים","Bicarbonate":"סודה לשתייה","Amidon de maïs":"קורנפלור","Bouillon de légumes":"ציר ירקות","Bouillon de poulet":"ציר עוף","Sauce soja":"רוטב סויה",
+  "Pain":"לחם","Hallot":"חלה","Pita":"פיתה","Baguette":"באגט","Pain complet":"לחם מלא","Pain de mie":"לחם טוסט","Biscottes":"ביסקוויטים","Crackers":"קרקרים","Matza":"מצה","Pain azyme":"מצה","Challot sucrée":"חלה מתוקה","Bagel":"בייגל","Brioche":"בריוש",
+  "Céréales":"דגני בוקר","Granola":"גרנולה","Flocons d'avoine":"שיבולת שועל","Café":"קפה","Café en capsules":"קפסולות קפה","Thé":"תה","Chocolat en poudre":"שוקו","Jus d'orange":"מיץ תפוזים","Jus de pomme":"מיץ תפוחים","Jus de grenade":"מיץ רימונים","Confiture de fraises":"ריבת תות","Confiture d'abricots":"ריבת משמש","Confiture de framboises":"ריבת פטל","Pâte à tartiner":"ממרח","Crêpes":"קרפים",
+  "Légumes surgelés":"ירקות קפואים","Épinards surgelés":"תרד קפוא","Petits pois surgelés":"אפונה קפואה","Frites":"צ'יפס","Pizza kasher":"פיצה כשרה","Glaces":"גלידה","Poisson surgelé":"דג קפוא","Poulet surgelé":"עוף קפוא","Knafeh surgelé":"כנאפה קפואה","Borekas surgelées":"בורקס קפוא","Sambousek surgelé":"סמבוסק קפוא",
+  "Sardines en boîte":"סרדינים בקופסה","Maïs":"תירס","Pois chiches en boîte":"חומוס בקופסה","Lentilles en boîte":"עדשים בקופסה","Tomates pelées":"עגבניות קלופות","Sauce tomate en bocal":"רוטב עגבניות בצנצנת","Artichauts marinés":"ארטישוק מושרה","Olives noires":"זיתים שחורים","Olives vertes":"זיתים ירוקים","Haricots rouges en boîte":"שעועית אדומה בקופסה","Betteraves en bocal":"סלק בצנצנת",
+  "Chips":"צ'יפס","Biscuits secs":"עוגיות","Gâteaux au chocolat":"עוגת שוקולד","Barres de céréales":"חטיף דגנים","Noix mélangées":"אגוזים מעורבים","Amandes":"שקדים","Noix de cajou":"קשיו","Pistaches":"פיסטוקים","Cacahuètes":"בוטנים","Raisins secs":"צימוקים","Pruneaux":"שזיפים מיובשים","Abricots secs":"משמשים מיובשים","Figues sèches":"תאנים מיובשות","Dattes Medjoul":"תמרי מג'הול","Halva":"חלווה","Lokum":"לוקום","Popcorn":"פופקורן","Crackers salés":"קרקרים מלוחים","Wafels":"וופל","Macarons kasher":"מקרון כשר",
+  "Eau minérale":"מים מינרלים","Eau gazeuse":"מים מוגזים","Coca-Cola":"קוקה קולה","Soda citron":"סודה לימון","Limonade":"לימונדה","Thé glacé":"תה קר","Sirop de menthe":"סירופ נענע","Sirop de framboise":"סירופ פטל","Vin kasher":"יין כשר","Vin rouge kasher":"יין אדום כשר","Vin blanc kasher":"יין לבן כשר","Champagne kasher":"שמפניה כשרה","Soda pamplemousse":"סודה אשכולית","Kombucha":"קומבוצ'ה",
+  "Papier toilette":"נייר טואלט","Sopalin":"מגבות נייר","Mouchoirs":"ממחטות","Liquide vaisselle":"סבון כלים","Lessive":"אבקת כביסה","Adoucissant":"מרכך כביסה","Javel":"אקונומיקה","Nettoyant sol":"מנקה רצפה","Éponges":"ספוגים","Sacs poubelle":"שקיות אשפה","Papier aluminium":"נייר כסף","Film alimentaire":"ניילון נצמד","Sacs congélation":"שקיות הקפאה","Gants ménagers":"כפפות גומי","Spray nettoyant":"ספריי ניקוי","Nettoyant WC":"מנקה אסלה","Tablettes lave-vaisselle":"טבליות מדיח","Sel lave-vaisselle":"מלח מדיח",
+  "Dentifrice":"משחת שיניים","Brosse à dents":"מברשת שיניים","Shampoing":"שמפו","Après-shampoing":"מרכך שיער","Gel douche":"ג'ל רחצה","Savon":"סבון","Déodorant":"דאודורנט","Crème hydratante":"קרם לחות","Coton-tiges":"מקלונים","Cotons démaquillants":"פדים להסרת איפור","Rasoirs":"סכיני גילוח","Mousse à raser":"קצף גילוח","Serviettes hygiéniques":"וסתונים",
+  "Couches":"חיתולים","Lingettes bébé":"מגבוני תינוק","Lait infantile":"תחליף חלב","Petits pots":"מחית תינוק","Compotes gourde":"קומפוט בשקית","Biscuits bébé":"עוגיות תינוק","Yaourts bébé":"יוגורט תינוק",
+  "Piles AA":"סוללות AA","Piles AAA":"סוללות AAA","Ampoules LED":"נורות LED","Allumettes":"גפרורים","Bougies de Shabbat":"נרות שבת","Havdalah":"הבדלה","Ruban adhésif":"סלוטייפ","Post-it":"פוסט-איט","Stylos":"עטים","Cahier":"מחברת"
+};
+
 // ─── Données produits ───────────────────────────────────────────
 const CATEGORIES = [
   {
@@ -649,22 +677,24 @@ function resetAll() {
 
 // ─── Send WhatsApp ──────────────────────────────────────────────
 function sendWhatsApp() {
-  const lines = ["🛒 *Ma liste de courses*\n"];
+  const lines = ["🛒 *רשימת קניות | Ma liste de courses*\n"];
 
   CATEGORIES.forEach(cat => {
     const catItems = cat.items.filter(item => state.checked[key(cat.id, item)]);
     if (catItems.length > 0) {
-      lines.push(`*${cat.emoji} ${cat.name}*`);
+      const heCat = HE_CATS[cat.id] || cat.name;
+      lines.push(`*${cat.emoji} ${heCat} | ${cat.name}*`);
       catItems.forEach(item => {
         const qty = state.checked[key(cat.id, item)];
-        lines.push(`  • ${item}${qty > 1 ? " × " + qty : ""}`);
+        const heItem = HE_ITEMS[item] || item;
+        lines.push(`  • ${heItem} | ${item}${qty > 1 ? " × " + qty : ""}`);
       });
       lines.push("");
     }
   });
 
   if (state.custom.length > 0) {
-    lines.push("*✏️ Divers*");
+    lines.push("*✏️ שונות | Divers*");
     state.custom.forEach(item => lines.push(`  • ${item}`));
   }
 
@@ -863,8 +893,6 @@ function buildCategory(cat, items) {
 
 // ─── Main render ────────────────────────────────────────────────
 function render() {
-  document.getElementById("prenomBtn").textContent = CONFIG.PRENOM;
-
   if (CONFIG.WHATSAPP_NUMBER === "972500000000") {
     document.getElementById("configBanner").style.display = "flex";
   }
