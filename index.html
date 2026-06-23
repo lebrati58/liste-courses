@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Courses 🛒">
+<meta name="theme-color" content="#2D7A4F">
+<title>🛒 Ma Liste de Courses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+ /* ─── Reset & Base ─── */
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+ :root {
+  --green: #2D7A4F;
+  --green-l: #E8F5EE;
+  --green-m: #4CAF76;
+  --yellow: #F5C842;
+  --yellow-l:#FFFBEA;
+  --red: #E85D4A;
+  --red-l: #FDECEA;
+  --gray: #6B7280;
+  --gray-l: #F3F4F6;
+  --bg: #FAFAF8;
+  --white: #FFFFFF;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --radius: 16px;
+  --font: 'Nunito', sans-serif;
+ }
+
+ html { font-size: 18px; }
+ body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: #1a1a1a;
+  min-height: 100vh;
+  padding-bottom: 120px;
+ }
+
+ /* ─── Header ─── */
+ header {
+  background: var(--green);
+  color: white;
+  padding: 20px 16px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(45,122,79,0.3);
+ }
+ .header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+ }
+ header h1 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+ }
+ .badge-count {
+  background: var(--yellow);
+  color: #1a1a1a;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  min-width: 36px;
+  text-align: center;
+ }
+
+ /* ─── Search ─── */
+ .search-wrap { position: relative; }
+ .search-wrap input {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  outline: none;
+ }
+ .search-wrap input::placeholder { color: rgba(255,255,255,0.65); }
+ .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  pointer-events: none;
+ }
+ .search-clear {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.3);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  color: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+ }
+
+ /* ─── Tabs ─── */
+ .tabs {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+ }
+ .tabs::-webkit-scrollbar { display: none; }
+ .tab {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--gray-l);
+  color: var(--gray);
+ }
+ .tab.active { background: var(--green); color: white; }
+ .tab.fav-tab { background: var(--yellow-l); color: #b8860b; }
+ .tab.fav-tab.active { background: var(--yellow); color: #1a1a1a; }
+
+ /* ─── Main ─── */
+ main { padding: 12px 16px 0; }
+
+ /* ─── Category ─── */
+ .category {
+  background: var(--white);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+ }
+ .cat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+ }
+ .cat-header:active { background: var(--gray-l); }
+ .cat-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  font-weight: 800;
+ }
+ .cat-emoji { font-size: 1.4rem; }
+ .cat-badge {
+  background: var(--green-l);
+  color: var(--green);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 10px;
+ }
+ .cat-arrow {
+  font-size: 1rem;
+  color: var(--gray);
+  transition: transform 0.3s ease;
+ }
+ .cat-arrow.open { transform: rotate(180deg); }
+ .cat-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+ }
+ .cat-body.open { max-height: 9999px; }
+
+ /* ─── Product row ─── */
+ .product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-top: 1px solid #F0F0EE;
+  transition: background 0.15s;
+ }
+ .product:active { background: var(--green-l); }
+ .product.checked { background: var(--green-l); }
+
+ .check-area {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 2.5px solid #D1D5DB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+ }
+ .check-area.checked {
+  background: var(--green);
+  border-color: var(--green);
+  animation: checkBounce 0.3s ease;
+ }
+ .check-area.checked::after {
+  content: '✓';
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 900;
+ }
+
+ @keyframes checkBounce {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.25); }
+  70%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+ }
+
+ .product-name {
+  flex: 1;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1.3;
+ }
+ .product.checked .product-name { color: var(--green); font-weight: 700; }
+
+ /* ─── Qty controls ─── */
+ .qty-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+ }
+ .qty-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.3rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s;
+ }
+ .qty-btn:active { transform: scale(0.9); }
+ .qty-minus { background: #EEF2FF; color: #4F46E5; }
+ .qty-plus  { background: var(--green); color: white; }
+ .qty-num {
+  font-size: 1rem;
+  font-weight: 800;
+  min-width: 22px;
+  text-align: center;
+  color: #1a1a1a;
+ }
+
+ /* ─── Fav button ─── */
+ .fav-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0.4;
+  transition: opacity 0.2s, transform 0.2s;
+ }
+ .fav-btn.active  { opacity: 1; }
+ .fav-btn:active  { transform: scale(1.3); }
+
+ /* ─── Custom item ─── */
+ .custom-section {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+ }
+ .custom-title { font-size: 1rem; font-weight: 800; margin-bottom: 12px; color: var(--green); }
+ .custom-input-row { display: flex; gap: 8px; }
+ .custom-input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s;
+ }
+ .custom-input:focus { border-color: var(--green); }
+ .custom-add-btn {
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0 18px;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+ }
+ .custom-items { margin-top: 10px; }
+ .custom-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #F0F0EE;
+  font-weight: 600;
+ }
+ .custom-remove {
+  background: var(--red-l);
+  color: var(--red);
+  border: none;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+ }
+
+ /* ─── Bottom bar ─── */
+ .bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  padding: 12px 16px;
+  background: white;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  display: flex;
+  gap: 10px;
+  z-index: 200;
+ }
+ .btn-reset {
+  background: var(--gray-l);
+  color: var(--gray);
+  border: none;
+  border-radius: 14px;
+  padding: 16px 18px;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+ }
+ .btn-send {
+  flex: 1;
+  background: #25D366;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 16px 20px;
+  font-family: var(--font);
+  font-size: 1.05rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(37,211,102,0.4);
+  transition: transform 0.1s;
+ }
+ .btn-send:active   { transform: scale(0.97); }
+ .btn-send:disabled { background: #B0B0B0; box-shadow: none; }
+
+ /* ─── Empty state ─── */
+ .empty-state { text-align: center; padding: 40px 20px; color: var(--gray); }
+ .empty-state .big { font-size: 3rem; margin-bottom: 12px; }
+ .empty-state p { font-size: 1rem; font-weight: 600; }
+
+ /* ─── Toast ─── */
+ .toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: #1a1a1a;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.3s;
+  white-space: nowrap;
+ }
+ .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+ /* ─── Search highlight ─── */
+ .search-active .category { display: none; }
+ .search-active .category.has-match { display: block; }
+ .highlight { background: var(--yellow); border-radius: 4px; padding: 0 2px; }
+
+ /* ─── Config banner ─── */
+ .config-banner {
+  background: #FFF3CD;
+  border: 2px solid #F5C842;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 12px 16px 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #856404;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+ }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+  ⚙️ CONFIGURATION — modifier ici
+═══════════════════════════════════════════ -->
+<script>
+const CONFIG = {
+  // ← Remplace par ton vrai numéro WhatsApp (format international, sans +)
+  WHATSAPP_NUMBER: "972500000000",
+  // ← Ton prénom tel qu'il apparaîtra dans le message
+  PRENOM: "Lionel"
+};
+</script>
+<!-- ══════════════════════════════════════════ -->
+
+<header>
+  <div class="header-top">
+    <h1>🛒 Ma liste de courses</h1>
+    <div class="badge-count" id="globalCount">0</div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Rechercher un produit…" autocomplete="off">
+    <button class="search-clear" id="searchClear">✕</button>
+  </div>
+</header>
+
+<div class="tabs" id="tabsBar">
+  <button class="tab fav-tab active-maybe" data-tab="favs" onclick="switchTab('favs')">⭐ Favoris</button>
+  <button class="tab active" data-tab="all" onclick="switchTab('all')">📋 Tout</button>
+</div>
+
+<div id="configBanner" class="config-banner" style="display:none">
+  ⚙️ Pense à changer le numéro WhatsApp dans le code (variable WHATSAPP_NUMBER)
+</div>
+
+<main id="mainContent"></main>
+
+<div class="toast" id="toast"></div>
+
+<div class="bottom-bar">
+  <button class="btn-reset" onclick="resetAll()" title="Tout décocher">🔄 Reset</button>
+  <button class="btn-send" id="btnSend" onclick="sendWhatsApp()" disabled>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.848L0 24l6.335-1.51A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.79 9.79 0 01-5.013-1.376l-.36-.213-3.76.896.944-3.658-.234-.376A9.783 9.783 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+    </svg>
+    Envoyer à <span id="prenomBtn"></span>
+  </button>
+</div>
+
+<script>
+// ─── Données produits ───────────────────────────────────────────
+const CATEGORIES = [
+  {
+    id: "fruits", emoji: "🍎", name: "Fruits",
+    items: ["Bananes","Pommes","Poires","Oranges","Clémentines","Citrons","Pamplemousses","Raisins","Fraises","Melon","Pastèque","Mangue","Avocat","Pêches","Abricots","Prunes","Kiwi","Ananas","Dattes","Figues","Grenade","Litchis"]
+  },
+  {
+    id: "legumes", emoji: "🥬", name: "Légumes",
+    items: ["Tomates","Concombres","Oignons","Ail","Pommes de terre","Patates douces","Carottes","Courgettes","Aubergines","Poivrons","Céleri","Chou","Laitue","Roquette","Épinards","Persil","Coriandre","Aneth","Menthe","Betteraves","Champignons","Brocoli","Chou-fleur","Haricots verts","Artichaut","Poireaux","Radis","Fenouil","Piment"]
+  },
+  {
+    id: "laitier", emoji: "🥛", name: "Produits laitiers",
+    items: ["Lait","Yaourts nature","Yaourts aux fruits","Fromage blanc","Cottage","Labneh","Beurre","Crème fraîche","Fromage râpé","Mozzarella","Feta","Ricotta","Halloumi","Gouda","Emmental","Camembert (K)","Crème dessert","Lait fermenté","Lait de soja","Lait d'amande"]
+  },
+  {
+    id: "viandes", emoji: "🥩", name: "Viandes & Volailles (casher)",
+    items: ["Poulet entier","Blancs de poulet","Cuisses de poulet","Escalopes de dinde","Viande hachée de bœuf","Steak de bœuf","Côtes de bœuf","Rôti de bœuf","Foie de poulet","Viande hachée de poulet","Aiguillettes de poulet","Canard"]
+  },
+  {
+    id: "poissons", emoji: "🐟", name: "Poissons (casher)",
+    items: ["Saumon","Thon en boîte","Filet de lieu","Carpe","Dorade","Mulet","Sardines","Merlu","Bar","Truite","Gefilte fish","Anchois"]
+  },
+  {
+    id: "epicerie", emoji: "🧂", name: "Épicerie sèche",
+    items: ["Riz","Pâtes","Couscous","Boulgour","Lentilles","Pois chiches","Haricots rouges","Haricots blancs","Farine","Sucre","Sel","Poivre","Paprika","Curcuma","Cumin","Cannelle","Cardamome","Za'atar","Sumac","Baharat","Huile d'olive","Huile de tournesol","Huile de coco","Vinaigre","Moutarde","Mayonnaise kasher","Ketchup","Sauce tomate","Concentré de tomate","Tahini","Houmous","Miel","Confiture","Nutella","Beurre de cacahuète","Cornichons","Câpres","Olives","Levure","Bicarbonate","Amidon de maïs","Bouillon de légumes","Bouillon de poulet","Sauce soja"]
+  },
+  {
+    id: "boulangerie", emoji: "🍞", name: "Boulangerie",
+    items: ["Pain","Hallot","Pita","Baguette","Pain complet","Pain de mie","Biscottes","Crackers","Matza","Pain azyme","Challot sucrée","Bagel","Brioche"]
+  },
+  {
+    id: "petitdej", emoji: "☕", name: "Petit-déjeuner",
+    items: ["Céréales","Granola","Flocons d'avoine","Café","Café en capsules","Thé","Chocolat en poudre","Jus d'orange","Jus de pomme","Jus de grenade","Confiture de fraises","Confiture d'abricots","Confiture de framboises","Pâte à tartiner","Crêpes"]
+  },
+  {
+    id: "surgeles", emoji: "🧊", name: "Surgelés",
+    items: ["Légumes surgelés","Épinards surgelés","Petits pois surgelés","Frites","Pizza kasher","Glaces","Poisson surgelé","Poulet surgelé","Knafeh surgelé","Borekas surgelées","Sambousek surgelé"]
+  },
+  {
+    id: "conserves", emoji: "🥫", name: "Conserves & bocaux",
+    items: ["Thon en boîte","Sardines en boîte","Maïs","Pois chiches en boîte","Lentilles en boîte","Tomates pelées","Sauce tomate en bocal","Artichauts marinés","Cornichons","Olives noires","Olives vertes","Haricots rouges en boîte","Betteraves en bocal"]
+  },
+  {
+    id: "snacks", emoji: "🍿", name: "Snacks & Gâteaux",
+    items: ["Chips","Biscuits secs","Gâteaux au chocolat","Barres de céréales","Noix mélangées","Amandes","Noix de cajou","Pistaches","Cacahuètes","Raisins secs","Pruneaux","Abricots secs","Figues sèches","Dattes Medjoul","Halva","Lokum","Popcorn","Crackers salés","Wafels","Macarons kasher"]
+  },
+  {
+    id: "boissons", emoji: "🥤", name: "Boissons",
+    items: ["Eau minérale","Eau gazeuse","Coca-Cola","Soda citron","Jus de pomme","Jus d'orange","Jus de grenade","Limonade","Thé glacé","Sirop de menthe","Sirop de framboise","Vin kasher","Vin rouge kasher","Vin blanc kasher","Champagne kasher","Soda pamplemousse","Kombucha"]
+  },
+  {
+    id: "menager", emoji: "🧹", name: "Produits ménagers",
+    items: ["Papier toilette","Sopalin","Mouchoirs","Liquide vaisselle","Lessive","Adoucissant","Javel","Nettoyant sol","Éponges","Sacs poubelle","Papier aluminium","Film alimentaire","Sacs congélation","Gants ménagers","Spray nettoyant","Nettoyant WC","Tablettes lave-vaisselle","Sel lave-vaisselle"]
+  },
+  {
+    id: "salledebain", emoji: "🚿", name: "Salle de bain",
+    items: ["Dentifrice","Brosse à dents","Shampoing","Après-shampoing","Gel douche","Savon","Déodorant","Crème hydratante","Coton-tiges","Cotons démaquillants","Rasoirs","Mousse à raser","Serviettes hygiéniques"]
+  },
+  {
+    id: "bebeenfant", emoji: "👶", name: "Bébé & Enfants",
+    items: ["Couches","Lingettes bébé","Lait infantile","Petits pots","Compotes gourde","Biscuits bébé","Yaourts bébé"]
+  },
+  {
+    id: "divers", emoji: "🔋", name: "Divers",
+    items: ["Piles AA","Piles AAA","Ampoules LED","Allumettes","Bougies de Shabbat","Havdalah","Ruban adhésif","Post-it","Stylos","Cahier"]
+  }
+];
+
+// ─── State ──────────────────────────────────────────────────────
+let state = {
+  checked: {},  // { "fruits__Bananes": 2 }
+  favs: {},     // { "fruits__Bananes": true }
+  custom: [],   // ["Cake maison", ...]
+  tab: "all"
+};
+
+// ─── LocalStorage ───────────────────────────────────────────────
+function saveState() {
+  localStorage.setItem("courses_state_v2", JSON.stringify(state));
+}
+function loadState() {
+  try {
+    const s = localStorage.getItem("courses_state_v2");
+    if (s) state = { ...state, ...JSON.parse(s) };
+  } catch(e) {}
+}
+
+// ─── Key helper ─────────────────────────────────────────────────
+function key(catId, item) { return catId + "__" + item; }
+
+// ─── Toast ──────────────────────────────────────────────────────
+function showToast(msg) {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2500);
+}
+
+// ─── Global count / send button ─────────────────────────────────
+function updateGlobalCount() {
+  const count = Object.keys(state.checked).length + state.custom.length;
+  document.getElementById("globalCount").textContent = count;
+  document.getElementById("btnSend").disabled = (count === 0);
+}
+
+// ─── Toggle item ────────────────────────────────────────────────
+function toggleItem(catId, item) {
+  const k = key(catId, item);
+  if (state.checked[k]) {
+    delete state.checked[k];
+  } else {
+    state.checked[k] = 1;
+  }
+  saveState();
+  render();
+}
+
+// ─── Change qty ─────────────────────────────────────────────────
+function changeQty(catId, item, delta) {
+  const k = key(catId, item);
+  const current = state.checked[k] || 1;
+  const newQty = Math.max(1, current + delta);
+  state.checked[k] = newQty;
+  saveState();
+  render();
+}
+
+// ─── Fav toggle ─────────────────────────────────────────────────
+function toggleFav(catId, item) {
+  const k = key(catId, item);
+  if (state.favs[k]) {
+    delete state.favs[k];
+    showToast("Retiré des favoris");
+  } else {
+    state.favs[k] = true;
+    showToast("⭐ Ajouté aux favoris");
+  }
+  saveState();
+  render();
+}
+
+// ─── Switch tab ─────────────────────────────────────────────────
+function switchTab(tab) {
+  state.tab = tab;
+  document.querySelectorAll(".tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.tab === tab);
+  });
+  saveState();
+  render();
+}
+
+// ─── Reset ──────────────────────────────────────────────────────
+function resetAll() {
+  if (!confirm("Tout décocher et vider la liste ?")) return;
+  state.checked = {};
+  state.custom = [];
+  saveState();
+  render();
+  showToast("🔄 Liste réinitialisée");
+}
+
+// ─── Send WhatsApp ──────────────────────────────────────────────
+function sendWhatsApp() {
+  const lines = ["🛒 *Ma liste de courses*\n"];
+
+  CATEGORIES.forEach(cat => {
+    const catItems = cat.items.filter(item => state.checked[key(cat.id, item)]);
+    if (catItems.length > 0) {
+      lines.push(`*${cat.emoji} ${cat.name}*`);
+      catItems.forEach(item => {
+        const qty = state.checked[key(cat.id, item)];
+        lines.push(`  • ${item}${qty > 1 ? " × " + qty : ""}`);
+      });
+      lines.push("");
+    }
+  });
+
+  if (state.custom.length > 0) {
+    lines.push("*✏️ Divers*");
+    state.custom.forEach(item => lines.push(`  • ${item}`));
+  }
+
+  const text = encodeURIComponent(lines.join("\n"));
+  window.open(`https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${text}`, "_blank");
+}
+
+// ─── Build custom section ────────────────────────────────────────
+function buildCustomSection() {
+  const div = document.createElement("div");
+  div.className = "custom-section";
+
+  const title = document.createElement("div");
+  title.className = "custom-title";
+  title.textContent = "✏️ Ajouter un article";
+  div.appendChild(title);
+
+  const row = document.createElement("div");
+  row.className = "custom-input-row";
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "custom-input";
+  input.id = "customInput";
+  input.placeholder = "Article personnalisé…";
+  input.addEventListener("keydown", e => { if (e.key === "Enter") addCustomItem(); });
+
+  const btn = document.createElement("button");
+  btn.className = "custom-add-btn";
+  btn.textContent = "+ Ajouter";
+  btn.addEventListener("click", addCustomItem);
+
+  row.appendChild(input);
+  row.appendChild(btn);
+  div.appendChild(row);
+
+  const itemsDiv = document.createElement("div");
+  itemsDiv.className = "custom-items";
+
+  state.custom.forEach((item, idx) => {
+    const itemRow = document.createElement("div");
+    itemRow.className = "custom-item";
+
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = item;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "custom-remove";
+    removeBtn.textContent = "✕";
+    removeBtn.addEventListener("click", () => removeCustomItem(idx));
+
+    itemRow.appendChild(nameSpan);
+    itemRow.appendChild(removeBtn);
+    itemsDiv.appendChild(itemRow);
+  });
+
+  div.appendChild(itemsDiv);
+  return div;
+}
+
+function addCustomItem() {
+  const input = document.getElementById("customInput");
+  const val = input ? input.value.trim() : "";
+  if (!val) return;
+  state.custom.push(val);
+  input.value = "";
+  saveState();
+  render();
+}
+
+function removeCustomItem(idx) {
+  state.custom.splice(idx, 1);
+  saveState();
+  render();
+}
+
+// ─── Build product row ───────────────────────────────────────────
+function buildProductRow(cat, item) {
+  const k = key(cat.id, item);
+  const qty = state.checked[k] || 0;
+  const isChecked = qty > 0;
+  const isFav = !!state.favs[k];
+
+  const div = document.createElement("div");
+  div.className = "product" + (isChecked ? " checked" : "");
+
+  // Checkbox
+  const checkArea = document.createElement("div");
+  checkArea.className = "check-area" + (isChecked ? " checked" : "");
+  checkArea.addEventListener("click", () => toggleItem(cat.id, item));
+
+  // Name
+  const nameSpan = document.createElement("span");
+  nameSpan.className = "product-name";
+  nameSpan.textContent = item;
+  nameSpan.addEventListener("click", () => toggleItem(cat.id, item));
+
+  div.appendChild(checkArea);
+  div.appendChild(nameSpan);
+
+  // Qty controls (only when checked)
+  if (isChecked) {
+    const qtyWrap = document.createElement("div");
+    qtyWrap.className = "qty-wrap";
+
+    const minusBtn = document.createElement("button");
+    minusBtn.className = "qty-btn qty-minus";
+    minusBtn.textContent = "−";
+    minusBtn.addEventListener("click", e => { e.stopPropagation(); changeQty(cat.id, item, -1); });
+
+    const qtyNum = document.createElement("span");
+    qtyNum.className = "qty-num";
+    qtyNum.textContent = qty;
+
+    const plusBtn = document.createElement("button");
+    plusBtn.className = "qty-btn qty-plus";
+    plusBtn.textContent = "+";
+    plusBtn.addEventListener("click", e => { e.stopPropagation(); changeQty(cat.id, item, 1); });
+
+    qtyWrap.appendChild(minusBtn);
+    qtyWrap.appendChild(qtyNum);
+    qtyWrap.appendChild(plusBtn);
+    div.appendChild(qtyWrap);
+  }
+
+  // Fav button
+  const favBtn = document.createElement("button");
+  favBtn.className = "fav-btn" + (isFav ? " active" : "");
+  favBtn.textContent = "⭐";
+  favBtn.addEventListener("click", e => { e.stopPropagation(); toggleFav(cat.id, item); });
+  div.appendChild(favBtn);
+
+  return div;
+}
+
+// ─── Toggle category open/close ──────────────────────────────────
+function toggleCat(header) {
+  const arrow = header.querySelector(".cat-arrow");
+  const body = header.nextElementSibling;
+  arrow.classList.toggle("open");
+  body.classList.toggle("open");
+}
+
+// ─── Build category block ────────────────────────────────────────
+function buildCategory(cat, items) {
+  const div = document.createElement("div");
+  div.className = "category";
+
+  const checkedCount = items.filter(item => state.checked[key(cat.id, item)]).length;
+  const isOpen = checkedCount > 0 || state.tab === "favs";
+
+  const header = document.createElement("div");
+  header.className = "cat-header";
+  header.addEventListener("click", () => toggleCat(header));
+
+  const catTitle = document.createElement("div");
+  catTitle.className = "cat-title";
+
+  const emojiSpan = document.createElement("span");
+  emojiSpan.className = "cat-emoji";
+  emojiSpan.textContent = cat.emoji;
+
+  const nameSpan = document.createElement("span");
+  nameSpan.textContent = cat.name;
+
+  const badge = document.createElement("span");
+  badge.className = "cat-badge";
+  if (checkedCount > 0) {
+    badge.textContent = checkedCount + "/" + items.length;
+  } else {
+    badge.textContent = items.length;
+    badge.style.background = "var(--gray-l)";
+    badge.style.color = "var(--gray)";
+  }
+
+  catTitle.appendChild(emojiSpan);
+  catTitle.appendChild(nameSpan);
+  catTitle.appendChild(badge);
+
+  const arrow = document.createElement("span");
+  arrow.className = "cat-arrow" + (isOpen ? " open" : "");
+  arrow.textContent = "▼";
+
+  header.appendChild(catTitle);
+  header.appendChild(arrow);
+
+  const body = document.createElement("div");
+  body.className = "cat-body" + (isOpen ? " open" : "");
+
+  items.forEach(item => body.appendChild(buildProductRow(cat, item)));
+
+  div.appendChild(header);
+  div.appendChild(body);
+  return div;
+}
+
+// ─── Main render ────────────────────────────────────────────────
+function render() {
+  document.getElementById("prenomBtn").textContent = CONFIG.PRENOM;
+
+  if (CONFIG.WHATSAPP_NUMBER === "972500000000") {
+    document.getElementById("configBanner").style.display = "flex";
+  }
+
+  const main = document.getElementById("mainContent");
+  main.innerHTML = "";
+  main.appendChild(buildCustomSection());
+
+  if (state.tab === "favs") {
+    const favItems = [];
+    CATEGORIES.forEach(cat => {
+      cat.items.forEach(item => {
+        if (state.favs[key(cat.id, item)]) favItems.push({ cat, item });
+      });
+    });
+
+    if (favItems.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.innerHTML = `<div class="big">⭐</div><p>Pas encore de favoris.<br>Appuie sur ⭐ pour en ajouter !</p>`;
+      main.appendChild(empty);
+    } else {
+      const grouped = {};
+      favItems.forEach(({ cat, item }) => {
+        if (!grouped[cat.id]) grouped[cat.id] = { cat, items: [] };
+        grouped[cat.id].items.push(item);
+      });
+      Object.values(grouped).forEach(({ cat, items }) => {
+        main.appendChild(buildCategory(cat, items));
+      });
+    }
+  } else {
+    CATEGORIES.forEach(cat => main.appendChild(buildCategory(cat, cat.items)));
+  }
+
+  updateGlobalCount();
+}
+
+// ─── Search ─────────────────────────────────────────────────────
+function initSearch() {
+  const searchInput = document.getElementById("searchInput");
+  const searchClear = document.getElementById("searchClear");
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().toLowerCase();
+    searchClear.style.display = q ? "flex" : "none";
+
+    if (!q) {
+      document.getElementById("mainContent").classList.remove("search-active");
+      // Restore highlighted names
+      document.querySelectorAll(".product-name").forEach(el => {
+        el.textContent = el.dataset.raw || el.textContent;
+      });
+      return;
+    }
+
+    document.getElementById("mainContent").classList.add("search-active");
+
+    document.querySelectorAll(".category").forEach(catDiv => {
+      let hasMatch = false;
+      catDiv.querySelectorAll(".product-name").forEach(nameEl => {
+        const raw = nameEl.dataset.raw || nameEl.textContent;
+        nameEl.dataset.raw = raw;
+        if (raw.toLowerCase().includes(q)) {
+          hasMatch = true;
+          nameEl.innerHTML = raw.replace(
+            new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"),
+            m => `<span class="highlight">${m}</span>`
+          );
+        } else {
+          nameEl.textContent = raw;
+        }
+      });
+      catDiv.classList.toggle("has-match", hasMatch);
+      if (hasMatch) {
+        catDiv.querySelector(".cat-body").classList.add("open");
+        catDiv.querySelector(".cat-arrow").classList.add("open");
+      }
+    });
+  });
+
+  searchClear.addEventListener("click", () => {
+    searchInput.value = "";
+    searchClear.style.display = "none";
+    document.getElementById("mainContent").classList.remove("search-active");
+    render();
+  });
+}
+
+// ─── Init ───────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  loadState();
+  // Sync tab buttons with loaded state
+  document.querySelectorAll(".tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.tab === state.tab);
+  });
+  render();
+  initSearch();
+});
+</script>
+</body>
+</html>
